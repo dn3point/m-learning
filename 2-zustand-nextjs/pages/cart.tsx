@@ -1,0 +1,65 @@
+import { NextPage } from 'next'
+import { useCart } from '../store/store'
+import { useEffect, useState } from 'react'
+import { Product } from '../model/models'
+import Header from '../components/header'
+
+const Cart: NextPage = () => {
+  const total = useCart((state) => state.total)
+  const cart = useCart((state) => state.cartContent)
+  const removeFromCart = useCart((state) => state.removeFromCart)
+  const [myCart, setCart] = useState<Product[]>([])
+  const [myTotal, setTotal] = useState<number>()
+  
+  useEffect(() => {
+    setCart(cart)
+    setTotal(total)
+  }, [cart])
+  
+  return (
+    <>
+      <Header />
+      <div className="container mx-auto pt-4">MY CART</div>
+      <div className="flex flex-col w-1/2 mx-auto gap-y-1">
+        <div className="flex flex-row justify-between ">
+          <span className="basis-1/4 uppercase font-bold">Product</span>
+          <span className="basis-1/4 text-right uppercase font-bold">
+            Price
+          </span>
+          <span className="basis-1/4 text-right uppercase font-bold">Qty</span>
+          <span className="basis-1/4 text-right uppercase font-bold"></span>
+        </div>
+        {myCart.map((item, key) => (
+          <div key={key} className="flex flex-row justify-between ">
+            <span className="basis-1/4">{item.name}</span>
+            <span className="basis-1/4 text-right">
+              $ {parseFloat(item.price) * (item.quantity ?? 0)}
+            </span>
+            <span className="basis-1/4 text-right">{item.quantity}</span>
+            <span className="basis-1/4 text-right">
+              <button
+                className="p-2 bg-slate-200"
+                onClick={() =>
+                  removeFromCart({
+                    id: item.id,
+                    price: item.price,
+                    quantity: item.quantity,
+                  })
+                }
+              >
+                X
+              </button>
+            </span>
+          </div>
+        ))}
+        <div className="flex flex-row justify-between mt-4 border-t-2">
+          <span className="basis-full text-right uppercase font-bold">
+            Total: ${myTotal}
+          </span>
+        </div>
+      </div>
+    </>
+  )
+}
+
+export default Cart
